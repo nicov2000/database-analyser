@@ -37,22 +37,20 @@ export async function analyse (collections) {
 export async function deepAnalyse () {
   const { db, collections } = await newDB()
   const { users: usersCollection } = collections
-  const { name, collection } = usersCollection
+  const { name } = usersCollection
 
   const documents = await db.collection('transactions').find().toArray()
-  const result = getSchema(documents, { debug: false })
+  const schema = getSchema(documents, { debug: false })
 
-  const schema = {
-    metadata: {
-      creation: new Date(),
-      collection: name
-    },
-    schema: result
+  const result = {
+    creation: new Date(),
+    collection: name,
+    schema
   }
 
   console.log('Saving new schema into collection...')
-  await db.collection('schemas').insertOne(schema)
+  await db.collection('schemas').insertOne(result)
   console.log('Done.')
 
-  return schema
+  return result
 }
