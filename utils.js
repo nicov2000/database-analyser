@@ -244,7 +244,10 @@ class DiffsObject {
         existingArray.push(...newDistinctItems)
       }
     } else { // other values
-      this.add(diff)
+      const existingDiff = Object.values(this.diffs).map(v => JSON.stringify(v)).includes(JSON.stringify(diff))
+      if (!existingDiff) {
+        this.add(diff)
+      }
     }
   }
 
