@@ -1,39 +1,25 @@
-import { newDB } from './db.js'
-import { populate, read, drop, analyse, deepAnalyse } from './actions.js'
-// import { sleep } from './utils.js'
+import { databaseInstance } from './database/db.js'
+import { getSchema } from './database/getSchema.js'
 
-const actions = {
-  populate,
-  read,
-  drop,
-  analyse,
-  'deep-analyse': deepAnalyse
-}
+// TODO: Add cursor processing for large samples (multiple queries to database)
+export async function analyse () {
+  const { db } = await databaseInstance()
+  const collectionName = 'transactions'
 
-async function main () {
-  const action = process.argv[2]
-  if (!Object.keys(actions).includes(action)) {
-    const availableActions = Object.values(Object.keys(actions))
-    console.log()
-    console.log('Available actions:', availableActions)
-    console.log()
-    process.exit(0)
+  const documents = await db.collection(collectionName).find().limit(2).toArray()
+  const schema = getSchema(documents, { debug: false })
+  const result = {
+    creation: new Date(),
+    [collectionName]: schema
   }
 
-  try {
-    const { collections } = await newDB()
+  console.log(`Saving schema for collection "${collectionName}"...`)
 
-    const res = await actions[action](collections)
+  await db.collection('schemas').insertOne(result)
 
-    console.log()
-    // console.dir(res, { depth: null })
-    console.log(res)
-    console.log()
-  } catch (error) {
-    console.log(error)
-  } finally {
-    process.exit(0)
-  }
+  console.log('Done.')
+  console.dir(result, { depth: null })
+  process.exit(0)
 }
 
-main()
+analyse()
