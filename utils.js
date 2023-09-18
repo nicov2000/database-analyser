@@ -170,9 +170,20 @@ function mergeStructures (patternStructure, newStructure, { debug = false } = {}
     const sameType = getType(patternStructure) === getType(newStructure)
 
     if (sameType) {
-      // Check complex datatypes first (take whichever for type check)
-      // Can't be both 'DiffsObject' at same time (only one, the FIRST one, can be at this stage)
-      if (isArray(patternStructure)) {
+      // Check if strings first since all types (except objects and arrays) are descripted as strings
+      // Then check if are arrays or objects to iterate. Also can't be both 'DiffsObject' at same time (only one, the FIRST one, can be at this stage)
+      if (isString(patternStructure)) {
+        const notSameString = patternStructure !== newStructure
+        if (notSameString) { // generate diffs object for different string types
+          const diffsObject = new DiffsObject()
+          diffsObject.addVariant(patternStructure)
+          diffsObject.addVariant(newStructure)
+
+          result = diffsObject.serialize()
+        } else {
+          result = patternStructure // whichever string is ok
+        }
+      } else if (isArray(patternStructure)) {
         // concat arrays
         const newItems = newStructure.filter(value => !patternStructure.includes(value))
         patternStructure.push(...newItems)
