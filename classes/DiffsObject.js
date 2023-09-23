@@ -1,4 +1,4 @@
-import { isArray, isDiffsObject, isObject, serializedTypes } from '../utils/typesDetection.js'
+import { isArray, isDiffsObject, isObject, serializedTypes } from '../lib/typesDetection.js'
 
 export class DiffsObject {
   constructor () {
