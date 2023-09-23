@@ -8,7 +8,7 @@ export async function databaseInstance () {
 
     const db = mongoClient.db(dbName)
 
-    console.log('[DB] Online')
+    console.log('Connected to Database')
     return { mongoClient, db }
   } catch (error) {
     console.error('Connection failed. Reason:', error)
