@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "A script to detect the entire database schema in mongodb",
-  "main": "index.js",
+  "main": "analyse.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
