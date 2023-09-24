@@ -1,9 +1,8 @@
-import settings, { exitEvents } from './lib/settings.js'
+import { databaseAnalyserSettings as settings } from './lib/settings.js'
 import { databaseInstance } from './database/db.js'
 import { colored } from './utils/colors.js'
 import { processDocuments, processSchemaResult } from './lib/processors.js'
-
-// TODO: add median and processed estimation
+import { generateErrorHandlers } from './lib/errorHandlers.js'
 
 const status = {
   schema: null,
@@ -12,6 +11,8 @@ const status = {
 }
 
 export async function analyse () {
+  generateErrorHandlers(status)
+
   const { dbName, cursorField, sortDir, paginationLimit: limit, collectionName, loggingThereshold, samplesLimit } = settings
   const sort = { [cursorField]: sortDir }
   let { resumeAtCursor } = settings
@@ -84,37 +85,5 @@ export async function analyse () {
 
   process.exit(0)
 }
-
-// Error handlers
-process.on(exitEvents.SIGINT, async () => {
-  console.log('Process stopped by the user')
-
-  await processSchemaResult({
-    status,
-    partialResult: true,
-    partialSaveReason: exitEvents.SIGINT
-  })
-  process.exit(0)
-})
-
-process.on(exitEvents.UNHANDLED_REJECTION, async (error) => {
-  let retries = 0
-  try {
-    console.log('Process stopped by an unexpected error')
-    console.log(error)
-
-    await processSchemaResult({
-      status,
-      partialResult: true,
-      partialSaveReason: exitEvents.UNHANDLED_REJECTION
-    })
-  } catch (error) {
-    if (retries < 5) {
-      console.log(error)
-      retries++
-    }
-  }
-  process.exit(0)
-})
 
 analyse()
