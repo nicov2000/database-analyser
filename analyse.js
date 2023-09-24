@@ -21,6 +21,7 @@ export async function analyse () {
   console.log('Target collection: ' + colored(collectionName))
   console.log('Cursor field: ' + colored(cursorField))
   console.log('Sort dir: ' + colored(sortDir))
+  console.log('Samples limit: ' + colored(samplesLimit))
   console.log('Pagination limit: ' + colored(limit))
   console.log('Logging threshold: ' + colored(loggingThereshold))
   if (resumeAtCursor) console.log('Resuming at cursor: ' + colored(resumeAtCursor))
